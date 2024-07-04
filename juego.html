@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego Matemático Interactivo para Niños</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            background-image: url('background.jpg'); /* Cambiar 'background.jpg' por tu imagen de fondo */
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .question {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            width: 80%;
+            max-width: 600px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        .question:hover {
+            transform: scale(1.02);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #score {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #timer {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #difficulty {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #difficulty label {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        #difficulty select {
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Juego Matemático Interactivo para Niños</h1>
+        
+        <div id="difficulty">
+            <label for="difficultyLevel">Selecciona el nivel de dificultad:</label>
+            <select id="difficultyLevel" onchange="changeDifficulty()">
+                <option value="easy">Fácil</option>
+                <option value="medium">Medio</option>
+                <option value="hard">Difícil</option>
+            </select>
+        </div>
+
+        <div class="question">
+            <h2 id="questionText">Pregunta:</h2>
+            <input type="number" id="answer" placeholder="Ingresa tu respuesta">
+            <button onclick="checkAnswer()">Comprobar</button>
+        </div>
+
+        <div id="result"></div>
+        <div id="score">Puntuación: <span id="scoreValue">0</span></div>
+        <div id="timer">Tiempo restante: <span id="countdown">60</span> segundos</div>
+    </div>
+
+    <script>
+        var score = 0;
+        var timer = 60; // segundos
+        var questionCount = 5; // Número total de preguntas
+        var currentQuestionIndex = 0;
+        var questions = [];
+
+        // Definir preguntas según el nivel de dificultad
+        var easyQuestions = [
+            { question: "¿Cuánto es 5 + 3?", answer: 8 },
+            { question: "¿Cuánto es 4 * 2?", answer: 8 },
+            { question: "¿Cuánto es 3 + 7?", answer: 10 },
+            { question: "¿Cuánto es 6 * 3?", answer: 18 },
+            { question: "¿Cuánto es 8 + 4?", answer: 12 }
+        ];
+
+        var mediumQuestions = [
+            { question: "¿Cuánto es 15 - 7?", answer: 8 },
+            { question: "¿Cuánto es 5 * 4?", answer: 20 },
+            { question: "¿Cuánto es 18 / 2?", answer: 9 },
+            { question: "¿Cuánto es 7 + 6?", answer: 13 },
+            { question: "¿Cuánto es 9 * 2?", answer: 18 }
+        ];
+
+        var hardQuestions = [
+            { question: "¿Cuánto es 27 - 15?", answer: 12 },
+            { question: "¿Cuánto es 8 * 6?", answer: 48 },
+            { question: "¿Cuánto es 36 / 4?", answer: 9 },
+            { question: "¿Cuánto es 15 + 8?", answer: 23 },
+            { question: "¿Cuánto es 12 * 3?", answer: 36 }
+        ];
+
+        function showQuestion() {
+            var questionElement = document.getElementById('questionText');
+            questionElement.textContent = questions[currentQuestionIndex].question;
+        }
+
+        function checkAnswer() {
+            // Obtener el valor ingresado por el usuario
+            var userAnswer = document.getElementById('answer').value;
+
+            // Convertir la respuesta a número
+            var answer = parseInt(userAnswer);
+
+            // Verificar si la respuesta es correcta
+            if (answer === questions[currentQuestionIndex].answer) {
+                document.getElementById('result').innerHTML = "<p style='color: green;'>¡Correcto! ¡Bien hecho!</p>";
+                score++;
+            } else {
+                document.getElementById('result').innerHTML = "<p style='color: red;'>Respuesta incorrecta. Inténtalo de nuevo.</p>";
+            }
+
+            // Actualizar puntuación visualmente
+            document.getElementById('scoreValue').textContent = score;
+
+            // Limpiar campo de respuesta
+            document.getElementById('answer').value = "";
+
+            // Pasar a la siguiente pregunta
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionCount) {
+                showQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function changeDifficulty() {
+            var difficulty = document.getElementById('difficultyLevel').value;
+
+            // Seleccionar preguntas según el nivel de dificultad
+            if (difficulty === 'easy') {
+                questions = easyQuestions.slice(); // Copiar preguntas para evitar modificar la lista original
+            } else if (difficulty === 'medium') {
+                questions = mediumQuestions.slice();
+            } else if (difficulty === 'hard') {
+                questions = hardQuestions.slice();
+            }
+
+            // Reiniciar juego con las nuevas preguntas
+            score = 0;
+            currentQuestionIndex = 0;
+            document.getElementById('scoreValue').textContent = score;
+            showQuestion();
+        }
+
+        // Función para finalizar el juego
+        function endGame() {
+            clearInterval(countdown);
+            document.getElementById('timer').innerHTML = "¡Juego finalizado!";
+            alert("¡Juego finalizado! Tu puntuación final es: " + score + " de " + questionCount);
+        }
+
+        // Mostrar la primera pregunta al cargar la página
+        window.onload = function() {
+            changeDifficulty();
+        };
+
+        // Temporizador
+        var countdown = setInterval(function() {
+            timer--;
+            document.getElementById('countdown').textContent = timer;
+
+            if (timer <= 0) {
+                clearInterval(countdown);
+                endGame();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
